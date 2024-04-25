@@ -20,8 +20,9 @@ class DataBase:
         sale = self.session.query(Sale).join(Stock).join(Book).join(Publisher
         ).join(Shop).filter(Publisher.name == publisher_name_id).all()
         if sale == []:
-            sale = self.session.query(Sale).join(Stock).join(Book).join(Publisher
-            ).join(Shop).filter(Publisher.id == publisher_name_id).all()
+            sale = self.session.query(Sale).join(Stock).join(Book
+            ).join(Publisher).join(Shop).filter(
+            Publisher.id == publisher_name_id).all()
             if sale != []:
                 for sale in sale:
                     print(
@@ -58,27 +59,37 @@ class DataBase:
             data = json.load(file)
         for line in data:
             if line["model"] == "publisher":
-                publisher = Publisher(id=line["pk"], name=line["fields"]["name"])
+                publisher = Publisher(id=line["pk"],
+                name=line["fields"]["name"])
                 self.session.add(publisher)
                 self.session.commit()
                 self.session.close()
             elif line["model"] == "shop":
-                shop = Shop(id=line["pk"], name=line["fields"]["name"])
+                shop = Shop(id=line["pk"],
+                name=line["fields"]["name"])
                 self.session.add(shop)
                 self.session.commit()
                 self.session.close()
             elif line["model"] == "book":
-                book = Book(id=line["pk"], title=line["fields"]["title"], id_publisher=line["fields"]["id_publisher"])
+                book = Book(id=line["pk"], 
+                title=line["fields"]["title"],
+                id_publisher=line["fields"]["id_publisher"])
                 self.session.add(book)
                 self.session.commit()
                 self.session.close()
             elif line["model"] == "stock":
-                stock = Stock(id=line["pk"], id_shop=line["fields"]["id_shop"], id_book=line["fields"]["id_book"], count=line["fields"]["count"])
+                stock = Stock(id=line["pk"], 
+                id_shop=line["fields"]["id_shop"],
+                id_book=line["fields"]["id_book"],
+                count=line["fields"]["count"])
                 self.session.add(stock)
                 self.session.commit()
                 self.session.close()
             elif line["model"] == "sale":
-                sale = Sale(id=line["pk"], price=line["fields"]["price"], date_sale=line["fields"]["date_sale"], count=line["fields"]["count"], id_stock=line["fields"]["id_stock"])
+                sale = Sale(id=line["pk"], price=line["fields"]["price"],
+                date_sale=line["fields"]["date_sale"],
+                count=line["fields"]["count"],
+                id_stock=line["fields"]["id_stock"])
                 self.session.add(sale)
                 self.session.commit()
                 self.session.close()
@@ -97,14 +108,17 @@ class Book(Base):
     __tablename__ = "book"
     id = sq.Column(sq.Integer, primary_key=True)
     title = sq.Column(sq.String(length=100), unique=True)
-    id_publisher = sq.Column(sq.Integer, sq.ForeignKey('publisher.id'), nullable=False)
+    id_publisher = sq.Column(sq.Integer, sq.ForeignKey('publisher.id'),
+     nullable=False)
     relationship(Publisher, backref='book')
 
 class Stock(Base):
     __tablename__ = "stock"
     id = sq.Column(sq.Integer, primary_key=True)
-    id_shop = sq.Column(sq.Integer, sq.ForeignKey('shop.id'), nullable=False)
-    id_book = sq.Column(sq.Integer, sq.ForeignKey('book.id'), nullable=False)
+    id_shop = sq.Column(sq.Integer, sq.ForeignKey('shop.id'),
+    nullable=False)
+    id_book = sq.Column(sq.Integer, sq.ForeignKey('book.id'),
+    nullable=False)
     count = sq.Column(sq.Integer)
     relationship(Book, backref='stock')
     relationship(Shop, backref='stock')
@@ -114,7 +128,8 @@ class Sale(Base):
     id = sq.Column(sq.Integer, primary_key=True)
     price = sq.Column(sq.FLOAT, nullable=False)
     date_sale = sq.Column(sq.TIMESTAMP, server_default=sq.func.now())
-    id_stock = sq.Column(sq.Integer, sq.ForeignKey('stock.id'), nullable=False)
+    id_stock = sq.Column(sq.Integer, sq.ForeignKey('stock.id'),
+    nullable=False)
     count = sq.Column(sq.Integer, nullable=False)
     relationship(Stock, backref='sale')
 
